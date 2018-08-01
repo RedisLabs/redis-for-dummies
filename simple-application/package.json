@@ -1,0 +1,19 @@
+{
+  "name": "node-redis-rest-crud-express-boilerplate",
+  "version": "1.0.0",
+  "description": "Boilerplate for developing create-read-update-delete (CRUD) applications with Node.js and Redis using REST-like endpoints",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kyle J Davis",
+  "license": "MIT",
+  "dependencies": {
+    "cuid": "^2.1.0",
+    "express": "^4.16.3",
+    "lodash.partial": "^4.2.1",
+    "redis": "^2.8.0",
+    "rk": "^1.0.0",
+    "yargs": "^11.0.0"
+  }
+}
