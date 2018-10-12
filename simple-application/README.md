@@ -20,5 +20,5 @@
 ```
 $ node index.js --connection /path/to/your/connection.json
 ```
-3. Follow the instructions in the book to run the exercises or interact with this server.
+3. Follow the instructions in the book (Chapter 6) to run the exercises or interact with this server.
 
