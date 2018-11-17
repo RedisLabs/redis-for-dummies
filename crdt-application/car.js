@@ -32,7 +32,7 @@ const
 
 function tagRoad(road) { return '{'+road+'}'; }
 
-function returnResultsAndArugments(commandArgs,cb) {                                    // sugar to handle errors in a callback
+function returnResultsAndArguments(commandArgs,cb) {                                    // sugar to handle errors in a callback
   return (err,results) => {
     if (err) { cb(err); } else {                                                        // if we have an error, pass it back to the callback
       cb(err,commandArgs,results);                                                      // if no error, then run the callback with the error (now null),
@@ -53,7 +53,7 @@ commands.enter = async.seq(                                                     
     client.sadd(                                                                        // add to the set
       rk(keys.roads,commandArgs.road),                                                  // at the key roads:[road from the command line] 
       commandArgs.plate,                                                                // the member is the plate from the command line
-      returnResultsAndArugments(commandArgs,cb)                                         // hand the error and return back the value
+      returnResultsAndArguments(commandArgs,cb)                                         // hand the error and return back the value
     );
   },
   async.asyncify((commandArgs,resultEnter) => {                                         // `async.asyncify` creates a callback-first function out of a sync function
@@ -69,7 +69,7 @@ commands.exit = async.seq(                                                      
     client.srem(                                                                        // set remove
       rk(keys.roads,commandArgs.road),                                                  // at the key roads:[road from the command line] 
       commandArgs.plate,                                                                // the member is the plate from the command line
-      returnResultsAndArugments(commandArgs,cb)                                         // hand the error and return back the value
+      returnResultsAndArguments(commandArgs,cb)                                         // hand the error and return back the value
     );
   },
   async.asyncify((commandArgs,resultExit) => {                                          // `async.asyncify` creates a callback-first function out of a sync function
@@ -87,7 +87,7 @@ commands.marker = async.seq(                                                    
       .multi()                                                                          // create an atomic transaction
       .sadd(rk(keys.roads,tagRoad(commandArgs.road)),commandArgs.plate)                          // add to a set at the key roads:[road from the command line], the member is the plate from the command line
       .hincrby(rk(keys.roadMarker,tagRoad(commandArgs.road)),commandArgs.plate,1)                // increment a hash value at value 'road-marker:[road from the command line], the field is the plate from the command line and the by one step
-      .exec(returnResultsAndArugments(commandArgs,cb));                                 // execute the two together
+      .exec(returnResultsAndArguments(commandArgs,cb));                                 // execute the two together
   },
   async.asyncify((commandArgs,addMultiResults) => {                                     // `async.asyncify` creates a callback-first function out of a sync function
     let resultEnter = addMultiResults[0];                                               // the results from the SADD
@@ -104,7 +104,7 @@ commands.marker = async.seq(                                                    
 // In production code, it would be wise to use a SSCAN command to better handle large sets
 commands.viewroads = async.seq(                                                         // `async.seq` creates an async waterfall and returns a function
   function getAllRoads(commandArgs,cb) {                                                // get all the road
-    client.smembers(keys.allRoads,returnResultsAndArugments(commandArgs,cb));           // with SMEMBERS from 'all-roads'
+    client.smembers(keys.allRoads,returnResultsAndArguments(commandArgs,cb));           // with SMEMBERS from 'all-roads'
   },
   function(commandArgs,roads,cb) {                                                      // get all the values from the roads
     let markerMulti = client.batch();                                                   // create a pipeline
@@ -112,7 +112,7 @@ commands.viewroads = async.seq(                                                 
     commandArgs.roads.forEach((aRoad) => {                                              // iterate through the roads
       markerMulti.hgetall(rk(keys.roadMarker,tagRoad(aRoad)));                                   // get all the values for each road
     });
-    markerMulti.exec(returnResultsAndArugments(commandArgs,cb));                        // execute the pipeline
+    markerMulti.exec(returnResultsAndArguments(commandArgs,cb));                        // execute the pipeline
   },
   async.asyncify((commandArgs,markers) => {                                             // `async.asyncify` creates a callback-first function out of a sync function
     let roadsAndMarkers = {};                                                           // create an empty object that we will populate with the forEach
